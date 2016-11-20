@@ -1,0 +1,27 @@
+FROM alpine
+
+RUN apk add --no-cache \
+		bsd-compat-headers \
+		build-base \
+		git \
+		libffi-dev \
+		python-dev
+
+RUN git clone --recurse-submodules \
+	https://github.com/micropython/micropython.git \
+	/usr/src/micropython
+
+# Add -Wno-error=ccp to Makefile
+RUN sed -i 's/CWARN = -Wall -Werror/CWARN = -Wall -Werror -Wno-error=cpp/g' /usr/src/micropython/unix/Makefile
+
+WORKDIR /usr/src/micropython/unix
+
+
+RUN make axtls
+RUN make
+RUN make install
+# micropython binary should now be at /usr/local/bin/micropython
+
+# Clean up
+RUN rm -rf /usr/src/micropython
+RUN rm -rf /var/cache/apk/*
