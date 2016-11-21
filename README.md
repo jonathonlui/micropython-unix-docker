@@ -1,6 +1,6 @@
 # micropython-unix-docker
 
-Run [MicroPython](http://micropython.org) in a Docker conatiner.
+Run [MicroPython](http://micropython.org) in a Docker container. Includes the [micropython-lib core libraries](https://github.com/micropython/micropython-lib)
 
 ## How to Build the Docker image
 
@@ -13,21 +13,25 @@ The `Makefile` builds the ['Unix' version of MicroPython](<https://github.com/mi
 1. Installs build dependencies
 2. Downloads the micropython source from Github
 3. Makes a small modification to the micropython Makefile to ignore a compile warning
-4. Builds the micropython binary.
+4. Builds and installs the micropython binary
+5. Downloads the micropython-lib source from GitHub
+6. Installs micropython-lib which copies the micropython modules to /root/.micropython
 
-The initial Docker image ends up being about 330MB.
+The initial Docker image ends up being about 340MB.
 
-To create a smaller image, the next step in the `Makefile` will copy out the `micropython` binary from the first image on to the host
+To create a smaller image, the next step in the `Makefile` will copy out the `micropython` binary and core modules from the first image on to the host
 
-Then another Docker image (see `Dockerfile`) is created that installs a dependency (libffi) and adds the `micropython` binary from the host to the image. This final image is about 5.4 MB.
+Then another Docker image (see `Dockerfile`) is created that installs a dependency (libffi) and adds the `micropython` binary and core modules from the first Docker image to the final Docker image. The final Docker image is about 6.9 MB.
 
 ## How to Run
 
-Once the final Docker image is build you can start running using MicroPython. You can get a MicroPython prompt by running:
+Once the final Docker image is built, you can start using MicroPython.
+
+You can start a MicroPython prompt by running:
 
 `docker run -it --rm jonathonlui/micropython`
 
-If you want run files on your local directory, one way to run is to mount the local directory into the container and specify the Python script to run. 
+If you want to run Python scripts from your local directory, one way to run is to mount the local directory into the container and specify the Python script to run. 
 
 For example, if your Python files are in the current directory and the main script is `app.py` you could run it like this:
 
@@ -38,3 +42,10 @@ A simple helper shell script `micropython.sh` is include. Run is like this:
 `./micropython.sh app.py`
 
 There's a `helloworld.py` script included. Try it by running: `./micropython.sh helloworld.py` and you should see `Hello, World!` as ouput.
+
+## Core Libraries
+
+The core libraries from [micropython-lib](https://github.com/micropython/micropython-lib) are installed in `/root/.micropython`.
+
+## Known Issues
+- Many Python scripts will fail during execution and output 'Illegal instruction'. Running the same code in a prompt is likely to succeed.  ¯\\\_(ツ)_/¯

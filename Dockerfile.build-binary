@@ -16,12 +16,26 @@ RUN sed -i 's/CWARN = -Wall -Werror/CWARN = -Wall -Werror -Wno-error=cpp/g' /usr
 
 WORKDIR /usr/src/micropython/unix
 
-
 RUN make axtls
 RUN make
 RUN make install
 # micropython binary should now be at /usr/local/bin/micropython
 
+RUN git clone \
+	https://github.com/micropython/micropython-lib.git \
+	/usr/src/micropython-lib
+
+RUN apk add --no-cache \
+		coreutils  # to get non-busybox 'cp'
+
+WORKDIR /usr/src/micropython-lib
+
+RUN make install
+# micropython-libs should now be in /root/.micropython
+
+WORKDIR /usr/src/
+
 # Clean up
+RUN rm -rf /usr/src/micropython-lib
 RUN rm -rf /usr/src/micropython
 RUN rm -rf /var/cache/apk/*
