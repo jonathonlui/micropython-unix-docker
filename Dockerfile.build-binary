@@ -6,6 +6,7 @@ RUN apk add --update \
 		coreutils \
 		git \
 		libffi-dev \
+		python3 \
 		python-dev
 
 RUN git clone --recurse-submodules \
@@ -19,6 +20,7 @@ WORKDIR /usr/src/micropython/unix
 
 RUN make axtls
 RUN make
+RUN cd ../tests && ./run-tests && cd ../unix
 RUN make install
 # micropython binary should now be at /usr/local/bin/micropython
 
