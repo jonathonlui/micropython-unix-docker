@@ -14,13 +14,13 @@ RUN git clone --recurse-submodules \
 	/usr/src/micropython
 
 # Add -Wno-error=ccp to Makefile
-RUN sed -i 's/CWARN = -Wall -Werror/CWARN = -Wall -Werror -Wno-error=cpp/g' /usr/src/micropython/unix/Makefile
+RUN sed -i 's/CWARN = -Wall -Werror/CWARN = -Wall -Werror -Wno-error=cpp/g' /usr/src/micropython/ports/unix/Makefile
 
-WORKDIR /usr/src/micropython/unix
+WORKDIR /usr/src/micropython/ports/unix
 
 RUN make axtls
 RUN make
-RUN cd ../tests && ./run-tests && cd ../unix
+RUN cd ../../tests && ./run-tests && cd ../ports/unix
 RUN make install
 # micropython binary should now be at /usr/local/bin/micropython
 
